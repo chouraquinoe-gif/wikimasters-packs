@@ -18,8 +18,19 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+      # Cookies renouvelés (chiffrés) de l'exécution précédente
+      - uses: actions/cache/restore@v4
+        with:
+          path: jar.enc
+          key: jar-${{ github.run_id }}
+          restore-keys: jar-
       - run: node open-packs.js
         env:
           WM_COOKIE: ${{ secrets.WM_COOKIE }}
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
           RUN_MINUTES: 350
+      - uses: actions/cache/save@v4
+        if: always() && hashFiles('jar.enc') != ''
+        with:
+          path: jar.enc
+          key: jar-${{ github.run_id }}-${{ github.run_attempt }}
