@@ -21,11 +21,14 @@ Une exécution dure environ 6 h et une nouvelle démarre toutes les 6 h.
    ton cookie et ton sujet ntfy restent cachés car ce sont des *secrets*).
 2. Ajoute-y les fichiers `open-packs.js` et `.github/workflows/open-packs.yml`.
 
-### 3. Récupérer ton cookie de session
-1. Dans Chrome, va sur https://www.wiki-masters.com/pulls (connecté).
-2. Ouvre les outils de développement (Cmd + Option + I) → onglet **Network** → recharge la page.
-3. Clique sur la première requête (`pulls`) → **Headers** → **Request Headers** → ligne `cookie`.
-4. Copie toute la valeur.
+### 3. Récupérer un cookie de session **dédié au script**
+Le script renouvelle lui-même sa connexion. Il lui faut donc **sa propre session**, distincte de celle
+de ton navigateur habituel (sinon les deux se « volent » le renouvellement et se déconnectent).
+1. Ouvre une **fenêtre de navigation privée** dans Chrome (Cmd + Maj + N).
+2. Va sur https://www.wiki-masters.com et connecte-toi.
+3. Ouvre les outils de développement (Cmd + Option + I) → **>>** → **Network** → recharge la page (Cmd + R).
+4. Clique sur la requête `pulls` → **Headers** → **Request Headers** → ligne `cookie` → clic droit → **Copy value**.
+5. Ferme la fenêtre privée **sans te déconnecter** (se déconnecter couperait aussi la session du script).
 
 ### 4. Secrets GitHub
 Dans le dépôt : **Settings → Secrets and variables → Actions → New repository secret** :
@@ -37,8 +40,10 @@ Onglet **Actions** → « Ouvrir les paquets WikiMasters » → **Run workflow**
 Ensuite ça repart tout seul toutes les 6 h.
 
 ## Entretien
-- **Cookie expiré** : tu reçois la notification « ouverture bloquée ». Refais les étapes 3 et 4,
+- **Connexion perdue** : tu reçois la notification « connexion perdue ». Refais les étapes 3 et 4,
   puis relance (étape 5).
+- **Ouverture bloquée** : le site a refusé les ouvertures pendant ~1 h (protection anti-robot, panne).
+  Le détail est dans le journal de l'exécution ; relance le workflow plus tard.
 - **60 jours sans activité** : GitHub désactive les tâches planifiées des dépôts publics inactifs
   et t'envoie un mail. Il suffit de cliquer sur le lien pour les réactiver.
 - **Arrêter** : onglet Actions → le workflow → « … » → **Disable workflow**.
