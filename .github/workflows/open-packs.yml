@@ -1,0 +1,25 @@
+name: Ouvrir les paquets WikiMasters
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'   # une exécution longue toutes les 6 h
+  workflow_dispatch:         # bouton "Run workflow" pour lancer à la main
+
+concurrency:
+  group: wikimasters-packs
+  cancel-in-progress: false
+
+jobs:
+  open:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node open-packs.js
+        env:
+          WM_COOKIE: ${{ secrets.WM_COOKIE }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          RUN_MINUTES: 350
